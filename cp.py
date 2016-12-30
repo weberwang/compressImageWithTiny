@@ -4,9 +4,10 @@ import sys
 import os
 import hashlib
 import json
-tinify.key = 'your key'
+tinify.key = 'wQqdcSQsav4GLlvEenO_r4a8JKEt96Ax'
 
-compressedfiles_data = None
+compressedfiles_data = {}
+root = None
 
 def filemd5(file):
     with open(file, 'rb') as compressed:
@@ -32,11 +33,13 @@ def findfile(path):
         return
     if os.path.isdir(path):
         listdir = os.listdir(path)
-        for path in listdir:
-            if os.path.isfile(path) and (path[path.rfind('.')+1:] in ['png','jpg']):
-                compressimg(path)
+        for fileName in listdir:
+            filePath = os.path.join(path, fileName)
+            print(filePath)
+            if os.path.isfile(filePath) and (filePath[filePath.rfind('.')+1:] in ['png','jpg']):
+                compressimg(filePath)
             else :
-                findfile(path)
+                findfile(filePath)
     pass
 
 if __name__ == '__main__':
@@ -44,13 +47,14 @@ if __name__ == '__main__':
         root = sys.argv[1]
     else:
         root = os.getcwd()
-    global compressedfiles_data
-    with open(os.path.join(root,'compressed.json'),'r') as compressedfiles:
-        filedata = compressedfiles.read()
-        if len(filedata) > 0:
-            compressedfiles_data = json.loads(filedata)
-        else :
-            compressedfiles_data = {}
+    ##global compressedfiles_data
+    if os.path.exists("compressed.json"):
+        with open(os.path.join(root,'compressed.json'),'r') as compressedfiles:
+            filedata = compressedfiles.read()
+            if len(filedata) > 0:
+                compressedfiles_data = json.loads(filedata)
+            else :
+                compressedfiles_data = {}
     findfile(root)
     with open('compressed.json','w') as compressedfiles:
         compressedfiles.write(json.dumps(compressedfiles_data))
